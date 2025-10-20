@@ -1,19 +1,21 @@
 import React, { useState } from 'react'
-import { createUserWithEmailAndPassword, getAuth,sendEmailVerification  } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth,sendEmailVerification,updateProfile   } from "firebase/auth";
 import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate } from 'react-router';
 
 
 const    signup = () => {
+  const nevigete = useNavigate()
   let auth = getAuth()
   let [info, setinfo] =useState({
 
     name :"",
-    emali: "",
+    email: "",
     password: ""
   });
 let [errors, setErrors]= useState({
   name:"",
-  emali:"",
+  email:"",
   password:""
 })
 
@@ -29,7 +31,7 @@ let [errors, setErrors]= useState({
     let hendleEmail=(e)=>{
       setErrors('')
       setinfo((prev)=> ({
-    ...prev,  emali: e.target.value
+    ...prev,  email: e.target.value
     }))
   }
     let hendlePassword=(e)=>{
@@ -45,36 +47,46 @@ let [errors, setErrors]= useState({
       }   
       ))
     }
-    if(!info.emali){
+    if(!info.email){
       setErrors((prev)=>({
-        ...prev , emali:"emali is required"
+        ...prev , email:"emali is required"
       } 
          
       ))
     }
     const auth = getAuth();
-createUserWithEmailAndPassword(auth, info.emali, info.password)
-  .then((userCredential) => {
-
+createUserWithEmailAndPassword(auth, info.email, info.password)
+  . then((userCredential) => {
+console.log(userCredential)
 sendEmailVerification(auth.currentUser)
   .then(() => {
+
+    const auth = getAuth();
+updateProfile(auth.currentUser, {
+  displayName: info.name, photoURL: "https://example.com/jane-q-user/profile.jpg"
+}).then(() => {
+nevigete('/signin')
+}).catch((error) => {
+  // An error occurred
+  // ...
+});
    toast.success(' Email send Successfully ')
   });
-  //   const user = userCredential.user;
-  // console.log(usre)
+  
+
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
       setErrors((prev)=>({
-        ...prev , name :errorsms
+        ...prev , name :errorMessage
       } ))
   });
   if((/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(info.emali))){
      
      }else{
       setErrors((prev)=>({
-        ...prev , emali:"emali is required"
+        ...prev , email:"email is required"
       }    
       ))
      }
@@ -142,6 +154,7 @@ sendEmailVerification(auth.currentUser)
         Sign Up
       </button>
     </form>
+    
   </div>
 </>
 

@@ -4,6 +4,7 @@ import rootlayout from './layout/rootlayout';
 import home from './page/home';
 import about from './page/about';
 import signup from './page/signup';
+import signin from './page/signin';
 
 const App = () => {
    let routar = createBrowserRouter([
@@ -20,6 +21,12 @@ const App = () => {
     {
     path: "/signup",
     Component: signup,
+    
+    
+  },
+      {
+    path: "/signin",
+    Component: signin,
     
     
   },
