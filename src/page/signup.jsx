@@ -2,11 +2,13 @@ import React, { useState } from 'react'
 import { createUserWithEmailAndPassword, getAuth,sendEmailVerification,updateProfile   } from "firebase/auth";
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router';
+import { getDatabase, ref, set } from "firebase/database";
 
 
 const    signup = () => {
   const nevigete = useNavigate()
   let auth = getAuth()
+  const db = getDatabase()
   let [info, setinfo] =useState({
 
     name :"",
@@ -57,20 +59,30 @@ let [errors, setErrors]= useState({
     const auth = getAuth();
 createUserWithEmailAndPassword(auth, info.email, info.password)
   . then((userCredential) => {
-console.log(userCredential)
+    let user = userCredential.user
+
 sendEmailVerification(auth.currentUser)
   .then(() => {
-
+    console.log(user)
     const auth = getAuth();
 updateProfile(auth.currentUser, {
   displayName: info.name, photoURL: "https://example.com/jane-q-user/profile.jpg"
 }).then(() => {
+//  data store
+toast.success(' Email send Successfully ')
+
+  set(ref(db, 'users/' + user.uid), {
+  Name : info.name,
+email : info.email,
+   
+  });
+
+
 nevigete('/signin')
 }).catch((error) => {
   // An error occurred
   // ...
 });
-   toast.success(' Email send Successfully ')
   });
   
 

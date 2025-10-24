@@ -1,14 +1,25 @@
 import { useSelector } from 'react-redux'
+import Navbar from '../assets/home/navbar'
+import UserList from '../assets/home/UserList'
+import FriendList from '../assets/home/FriendList'
 
 const home = () => {
-  let user = useSelector((state)=>state.userinfo.value.displayName)
-  console.log(user)
+let user = useSelector((state) => state.userinfo.
+value
+)
+
   return (
-    <div>
-      home
-      <h2>{user}</h2>
-    </div>
+    <main>
+      <div className=' flex justify-center gap-10 mt-2'>
+ <FriendList/>
+<UserList/>
+      
+      </div>
+      
+    <Navbar userInfo={user} />
+    </main>
   )
+ 
 }
 
 export default home
