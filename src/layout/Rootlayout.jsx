@@ -10,7 +10,7 @@ const rootlayout = () => {
     if(!user){
 nevigete('/signin')
     }
-    console.log(auth.currentUser)
+    // console.log(auth.currentUser)
   }, [auth.currentUser]);
 
   return (

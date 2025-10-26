@@ -1,16 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom"; // react-router ব্যবহার করছো তাই এটা হওয়া উচিত
+import { Link, useNavigate } from "react-router-dom"; // react-router ব্যবহার করছো তাই এটা হওয়া উচিত
 import { motion, AnimatePresence } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
+import { userinfo } from "../../slices/userSlice";
 
 const Navbar = ({userInfo}) => {
+  let dispatch= useDispatch()
+  let user = useSelector((state)=>state.userinfo.value.displayName)
+  let nevigete = useNavigate()
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef(null);
-console.log(userInfo)
+// console.log(userInfo)
 
   // বাইরে ক্লিক করলে popup বন্ধ হবে
   useEffect(() => {
     function handleClickOutside(event) {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
+      if (popupRef.current && !popupRef.current.contains(event.target)) { 
         setIsOpen(false);
       }
     }
@@ -18,6 +23,14 @@ console.log(userInfo)
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  let heandelLogout=()=>{
+    nevigete('/signin')
+    // localStorage.removeItem('user', null)
+
+    dispatch(userinfo(null)); // Redux থেকে data remove
+        localStorage.clear(); // ✅ সব auth data remove
+        toast.success("Logout Successful!");
+  }
   return (
     <nav className="w-full bg-gray-800 text-white py-3 flex justify-around items-center fixed bottom-0 left-0 shadow-md z-50">
       {/* Home */}
@@ -75,7 +88,7 @@ console.log(userInfo)
                   Settings
                 </Link>
                 <button
-                  onClick={() => alert("Logged out!")}
+                  onClick={heandelLogout}
                   className="text-left hover:text-red-500"
                 >
                   Logout

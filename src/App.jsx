@@ -46,7 +46,7 @@ const App = () => {
     
   },
       {
-    path: "/  Logout",
+    path: "/Logout",
     Component: Logeout,
     
     
