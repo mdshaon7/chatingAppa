@@ -21,7 +21,7 @@ const Home = () => {
       </div>
 
       {/* Navbar at the Bottom */}
-      <Navbar userInfo={user} />
+      
     </main>
   );
 };

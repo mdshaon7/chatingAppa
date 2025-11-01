@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { Outlet, useNavigate } from 'react-router'
 import { auth } from "../firebase.config"
 import { useSelector } from 'react-redux'
+import Navbar from '../assets/home/navbar'
 
 const rootlayout = () => {
   let nevigete = useNavigate()
@@ -17,6 +18,8 @@ nevigete('/signin')
     <>
 
       <Outlet /> 
+
+      <Navbar userInfo={user} />
     </>
 
  

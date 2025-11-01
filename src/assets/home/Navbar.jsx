@@ -6,11 +6,11 @@ import { userinfo } from "../../slices/userSlice";
 
 const Navbar = ({userInfo}) => {
   let dispatch= useDispatch()
-  let user = useSelector((state)=>state.userinfo.value.displayName)
+  let user = useSelector((state)=>state.userinfo.value)
   let nevigete = useNavigate()
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef(null);
-// console.log(userInfo)
+// console.log(user)
 
   // বাইরে ক্লিক করলে popup বন্ধ হবে
   useEffect(() => {
@@ -34,25 +34,25 @@ const Navbar = ({userInfo}) => {
   return (
     <nav className="w-full bg-gray-800 text-white py-3 flex justify-around items-center fixed bottom-0 left-0 shadow-md z-50">
       {/* Home */}
-      <a
-        href="#"
+      <Link
+       to={`/`}
         className="flex flex-col items-center hover:text-blue-400 transition"
       >
         <i className="fas fa-home text-2xl mb-1" />
         <p className="text-sm">Home</p>
-      </a>
+      </Link>
 
       {/* SMS */}
-      <a href="#" className="flex flex-col items-center hover:text-blue-400">
+      <Link to={`/message`} className="flex flex-col items-center hover:text-blue-400">
         <i className="fas fa-comment text-2xl mb-1" />
         <p className="text-sm">SMS</p>
-      </a>
+      </Link>
 
       {/* Profile */}
       <div className="relative" ref={popupRef}>
         <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex flex-col items-center hover:text-blue-400 transition"
+          onClick={() => setIsOpen(!isOpen) }
+          className={`flex flex-col items-center hover:text-blue-400 transition`}
         >
           <i className="fas fa-user text-2xl mb-1" />
           <p className="text-sm">Profile</p>
@@ -74,9 +74,9 @@ const Navbar = ({userInfo}) => {
                   alt="Profile"
                   className="w-16 h-16 rounded-full mb-2"
                 />
-                <h3 className="font-semibold text-lg">{userInfo?.displayName}</h3>
+                <h3 className="font-semibold text-lg">{user.displayName}</h3>
                 <p className="text-sm text-gray-500 mb-3">
-                 {userInfo?.email}
+                 {user?.email}
                 </p>
               </div>
               <hr className="my-2" />

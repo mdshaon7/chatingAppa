@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { getDatabase, ref, onValue, push } from "firebase/database";
 import { useSelector } from 'react-redux';
+import { button, h2 } from 'framer-motion/client';
 
 const UserList = () => {
+    const [pendingId, setPendingId] = useState(null);
+
   const db = getDatabase();
   const currentUser = useSelector((state) => state.userinfo.value);
   const [userList, setUserList] = useState([]);
   const [requestList, setRequestList] = useState([]);
-
+  let [checkconfirmedfriend, setcheckconfirmedfriend] = useState([])
+  const user = useSelector((state) => state.userinfo.value);
+  let [requestid, setrequestid] = useState([])
+  let [pading, setpading] = useState(false)
   // 🔹 Load all users except current user
   useEffect(() => {
     if (!currentUser?.uid) return;
@@ -26,19 +32,49 @@ const UserList = () => {
   }, [db, currentUser?.uid]);
 
   // 🔹 Load all friend requests
+  // useEffect(() => {
+  //   const requestRef = ref(db, "friendrequest/");
+  //   onValue(requestRef, (snapshot) => {
+  //     const arr = [];
+  //     snapshot.forEach((item) => {
+  //       arr.push(item.val());
+  //     });
+  //     setRequestList(arr);
+  //   });
+  // }, [db]);
+
+
   useEffect(() => {
-    const requestRef = ref(db, "friendrequest/");
-    onValue(requestRef, (snapshot) => {
-      const arr = [];
+    const userRef = ref(db, 'friends/');
+    onValue(userRef, (snapshot) => {
+      // const data = snapshot.val();
+      let arr = []
       snapshot.forEach((item) => {
-        arr.push(item.val());
-      });
-      setRequestList(arr);
+        arr.push(item.val().receiverid + item.val().senderid)
+        setcheckconfirmedfriend(arr)
+      })
     });
-  }, [db]);
+  }, [])
+  useEffect(() => {
+    const userRef = ref(db, 'friendrequest/');
+    onValue(userRef, (snapshot) => {
+      // const data = snapshot.val();
+      let arr = []
+      snapshot.forEach((item) => {
+        arr.push(item.val().senderid + item.val().reciverid)
+        setrequestid(arr)
+      })
+    });
+  }, [])
+
 
   // 🔹 Send Friend Request
   const handleFriendRequest = (item) => {
+
+    // setPendingId(item.id);
+
+
+    setpading(true)
     if (!currentUser?.uid || !item?.id) return;
 
     // নিজের কাছে নিজেকে রিকোয়েস্ট পাঠাতে না পারি
@@ -58,13 +94,13 @@ const UserList = () => {
     });
   };
 
-  // 🔹 Check if request already sent
-  const isRequestSent = (item) => {
-    return requestList.some(
-      (req) =>
-        req.senderid === currentUser.uid && req.receiverid === item.id
-    );
-  };
+  // // 🔹 Check if request already sent
+  // const isRequestSent = (item) => {
+  //   return requestList.some(
+  //     (req) =>
+  //       req.senderid === currentUser.uid && req.receiverid === item.id
+  //   );
+  // };
 
   return (
     <div className="bg-white shadow-2xl rounded-2xl border border-gray-200 w-80 h-96 p-5 flex flex-col">
@@ -90,19 +126,36 @@ const UserList = () => {
                 {item.name || item.fullname || item.displayName || "Unknown User"}
               </span>
             </div>
+            <div className="">
 
-            {isRequestSent(item) ? (
-              <button className="py-[8px] px-[15px] bg-gray-400 rounded-[7px] text-white cursor-default">
-                Pending
-              </button>
-            ) : (
-              <button
-                onClick={() => handleFriendRequest(item)}
-                className="py-[8px] px-[15px] bg-blue-700 rounded-[7px] text-white cursor-pointer"
-              >
-                Add
-              </button>
-            )}
+              {
+                checkconfirmedfriend.includes(user.uid + item.id) ||
+                  checkconfirmedfriend.includes(item.id + user.uid)
+                  ? (
+                    <button className="px-3 py-1 bg-gray-400 text-white rounded">
+                      Friend
+                    </button>
+                  ) : requestid.includes(user.uid + item.id) ||
+                    requestid.includes(item.id + user.uid)
+                    ? (
+                      <button className="px-3 py-1 bg-gray-500 text-white rounded">
+                        Requested
+                      </button>
+                    ) : pading ? (
+                      <button className="px-3 py-1 bg-blue-500 text-white rounded">
+                        Pending...
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleFriendRequest(item)}
+                        className="px-3 py-1 bg-blue-700 text-white rounded"
+                      >
+                        Add Friend
+                      </button>
+                    )
+              }
+
+            </div>
           </div>
         ))}
       </div>
